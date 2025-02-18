@@ -10,6 +10,7 @@ public class HomeController {
     @GetMapping
     public String greetings(){
         return "Welcome to prime services!";
+        //testing
 
     }
 }
