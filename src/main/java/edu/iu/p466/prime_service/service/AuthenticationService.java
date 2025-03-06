@@ -2,6 +2,7 @@ package edu.iu.p466.prime_service.service;
 
 
 import edu.iu.p466.prime_service.model.Customer;
+import edu.iu.p466.prime_service.repository.AuthenticationDBRepository;
 import edu.iu.p466.prime_service.repository.AuthenticationFileRepository;
 import edu.iu.p466.prime_service.repository.IAuthenticationFileRepository;
 import edu.iu.p466.prime_service.service.IAuthenticationService;
@@ -21,15 +22,15 @@ import java.io.IOException;
 public class AuthenticationService
         implements IAuthenticationService , UserDetailsService {
 
-    IAuthenticationFileRepository  authenticationRepository;
+    AuthenticationDBRepository authenticationRepository;
 
 
-    public AuthenticationService(IAuthenticationFileRepository  authenticationRepositroy){
+    public AuthenticationService(AuthenticationDBRepository  authenticationRepositroy){
         this.authenticationRepository = authenticationRepositroy;
     }
 
     @Override
-    public boolean register(Customer customer) throws IOException {
+    public Customer register(Customer customer) throws IOException {
         BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
         String passwordEncoded = bc.encode(customer.getPassword());
         customer.setPassword(passwordEncoded);
@@ -46,7 +47,7 @@ public class AuthenticationService
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            Customer customer = authenticationRepository.findByUserName(username);
+            Customer customer = authenticationRepository.findByUsername(username);
             if(customer == null){
                 throw new UsernameNotFoundException("");
             }
@@ -55,7 +56,7 @@ public class AuthenticationService
                     .password(customer.getPassword())
                     .build();
 
-        } catch (IOException e){
+        } catch (Exception e){
             throw new RuntimeException(e);
         }
     }

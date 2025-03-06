@@ -1,8 +1,15 @@
 package edu.iu.p466.prime_service.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Table
+@Entity
 
 public final class Customer {
 
+    @Id
     private  String username;
     private  String password;
 
