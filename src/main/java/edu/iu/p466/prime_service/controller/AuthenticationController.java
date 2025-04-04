@@ -31,25 +31,14 @@ public class AuthenticationController {
     }
 
 
-    @PostMapping("/register")
-    public boolean register(@RequestBody Customer customer){
-        try {
-            return authenticationService.register(customer);
-        } catch (IOException e){
-            throw new RuntimeException(e);
-
-        }
+    @PostMapping("/")
+    public boolean register(){
+        System.out.println("Hello!");
     }
 
-    @PostMapping("/loign")
-    public String login(@RequestBody Customer customer){
-        Authentication authentication = authenticationManager
-                .authenticate(
-                        new UsernamePasswordAuthenticationToken(
-                                customer.getUsername(),
-                                customer.getPassword()));
-
-        return tokenService.generateToken(authentication);
+    @PostMapping("/add/{n}/{m}")
+    public String add(){
+      System.out.println("Hello");
 
 
     }
