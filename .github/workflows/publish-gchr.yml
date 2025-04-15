@@ -13,6 +13,11 @@ permissions:
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.sha }}
+      CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+      CONTAINER_REGISTRY_UN: ${{ secrets.CONTAINER_REGISTRY_UN }}
+      CONTAINER_REGISTRY_PW: ${{ secrets.CONTAINER_REGISTRY_PW }}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -28,6 +33,14 @@ jobs:
 
       - name: Run the unit tests
         run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+
+      - uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFG }}
+
+      - name: Deploy
+        run: ./deploy.sh
+
 
       - name: Report
         uses: dorny/test-reporter@v1
@@ -46,6 +59,6 @@ jobs:
 
       - name: Azure Image
         run: |
-            docker login --username  --password ${{secrets.AZURE_CONTAINER_REGISTRY}} practicum7container.azurecr.io
-            docker tag ghcr.io/tno52/practcium6:latest practicum7container.azurecr.io/practcium6:latest
-            docker push practicum7container.azurecr.io/practcium6:latest
+          docker login --username $CONTAINER_REGISTRY_UN --password $CONTAINER_REGISTRY_PW $CONTAINER_REGISTRY
+          docker tag ghcr.io/hbahramian/arithmetic-service:$VERSION $CONTAINER_REGISTRY/practicum6:$VERSION
+          docker push $CONTAINER_REGISTRY/arithmetic-service:$VERSION
